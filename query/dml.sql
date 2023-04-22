@@ -1,55 +1,3 @@
-SELECT pegawai.id_pegawai, pegawai.nama_pegawai, jadwal_pegawai.tgl_kerja, jadwal_pegawai.shift
-FROM jadwal_pegawai
-INNER JOIN pegawai ON pegawai.id_pegawai = jadwal_pegawai.id_pegawai
-WHERE jadwal_pegawai.tgl_kerja = '2022-12-10' AND jadwal_pegawai.shift = 'Malam';
-
-------------------------------------------------------------------------------------------------------
-
-SELECT buku.id_buku, produksi.id_produksi, buku.judul, produksi.modal
-FROM buku
-INNER JOIN produksi ON buku.id_produksi = produksi.id_produksi
-ORDER BY modal DESC
-LIMIT 3
-
--------------------------------------------------------------------------------------------------------
-
-/* SELECT buku.id_buku, buku.judul, buku.id_kategori, kategori.nama_kategori AS kategori
-FROM buku
-INNER JOIN kategori ON buku.id_kategori = kategori.id_kategori
-ORDER BY id_buku */
-
-/* SELECT * 
-FROM (
-	SELECT buku.id_buku, buku.judul, buku.id_kategori, detail_transaksi_distribusi.id_detail_transaksi_distribusi
-    FROM detail_transaksi_distribusi
-    INNER JOIN buku ON detail_transaksi_distribusi.id_buku = buku.id_buku
-) as detail
-INNER JOIN transaksi_distribusi ON transaksi_distribusi.id_transaksi_distribusi = detail.id_detail_transaksi_distribusi */
-
-SELECT id_kategori, tanggal, total_harga
-FROM (
-	SELECT buku.id_buku, buku.id_kategori, detail_transaksi_distribusi.id_detail_transaksi_distribusi
-    FROM detail_transaksi_distribusi
-    INNER JOIN buku ON detail_transaksi_distribusi.id_buku = buku.id_buku
-) as detail
-INNER JOIN transaksi_distribusi ON transaksi_distribusi.id_transaksi_distribusi = detail.id_detail_transaksi_distribusi
-WHERE MONTH(tanggal) = 1 AND id_kategori = 9
-ORDER BY tanggal
-
-
-
-
-
-
-
-
-
-
-
-
-
-
----------------------------------------------------------------
 
 SELECT tb_pegawai.id_pegawai, tb_pegawai.nama_pegawai, tb_jadwal_pegawai.tgl_kerja, tb_jadwal_pegawai.shift
 FROM tb_jadwal_pegawai
@@ -64,9 +12,10 @@ INNER JOIN tb_produksi ON tb_buku.id_produksi = tb_produksi.id_produksi
 ORDER BY modal DESC
 LIMIT 3
 
--------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
 
-/* SELECT id_kategori, tgl_transaksi, total_harga
+~?
+SELECT id_kategori, tgl_transaksi, total_harga
 FROM (
 	SELECT tb_buku.id_buku, tb_buku.id_kategori, tb_detail_transaksi_distribusi.id_detail_transaksi_distribusi
     FROM tb_detail_transaksi_distribusi
@@ -74,8 +23,8 @@ FROM (
 ) as detail
 INNER JOIN tb_transaksi_distribusi ON tb_transaksi_distribusi.id_transaksi_distribusi = detail.id_detail_transaksi_distribusi
 WHERE MONTH(tgl_transaksi) = 3 AND id_kategori = 1
-ORDER BY tgl_transaksi; */
-
+ORDER BY tgl_transaksi;
+~?
 
 SELECT 
 	tb_kategori.id_kategori,
@@ -95,13 +44,6 @@ GROUP BY
     tb_buku.id_buku
 ORDER BY 
     total_terjual DESC
-
-
-
-
-
-
-
 
 
 /* JOIN untuk menghitung harga detail bahan baku*/
@@ -132,6 +74,7 @@ FROM tb_detail_transaksi_distribusi
 INNER JOIN tb_buku ON tb_detail_transaksi_distribusi.id_buku = tb_buku.id_buku
 ORDER BY id_transaksi_distribusi
 
+/* JOIN ?*/
 SELECT 
     tb_detail_transaksi_distribusi.id_transaksi_distribusi, 
     SUM(tb_buku.harga * tb_detail_transaksi_distribusi.jumlah) AS total_harga
