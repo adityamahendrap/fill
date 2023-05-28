@@ -14,7 +14,6 @@ LIMIT 3
 
 --------------------------------------------------------------------------------------------
 
-~?
 SELECT id_kategori, tgl_transaksi, total_harga
 FROM (
 	SELECT tb_buku.id_buku, tb_buku.id_kategori, tb_detail_transaksi_distribusi.id_detail_transaksi_distribusi
@@ -24,7 +23,8 @@ FROM (
 INNER JOIN tb_transaksi_distribusi ON tb_transaksi_distribusi.id_transaksi_distribusi = detail.id_detail_transaksi_distribusi
 WHERE MONTH(tgl_transaksi) = 3 AND id_kategori = 1
 ORDER BY tgl_transaksi;
-~?
+
+--------------------------------------------------------------------------------------------
 
 SELECT 
 	tb_kategori.id_kategori,
@@ -45,8 +45,8 @@ GROUP BY
 ORDER BY 
     total_terjual DESC
 
+--------------------------------------------------------------------------------------------
 
-/* JOIN untuk menghitung harga detail bahan baku*/
 SELECT tb_detail_bahan_baku.id_detail_bahan_baku, tb_detail_bahan_baku.id_bahan_baku, tb_detail_bahan_baku.id_produksi, tb_detail_bahan_baku.jumlah, tb_bahan_baku.harga,
 tb_detail_bahan_baku.jumlah * tb_bahan_baku.harga AS total_harga
 FROM tb_detail_bahan_baku
@@ -54,7 +54,8 @@ INNER JOIN tb_bahan_baku
 ON tb_detail_bahan_baku.id_bahan_baku = tb_bahan_baku.id_bahan_baku
 ORDER BY id_detail_bahan_baku
 
-/* JOIN untuk menghitung modal produksi */
+--------------------------------------------------------------------------------------------
+
 SELECT tb_detail_bahan_baku.id_detail_bahan_baku, tb_detail_bahan_baku.id_bahan_baku, tb_detail_bahan_baku.id_produksi, SUM(tb_detail_bahan_baku.jumlah * tb_bahan_baku.harga) AS total_harga
 FROM tb_detail_bahan_baku
 INNER JOIN tb_bahan_baku
@@ -62,7 +63,7 @@ ON tb_detail_bahan_baku.id_bahan_baku = tb_bahan_baku.id_bahan_baku
 GROUP BY tb_detail_bahan_baku.id_produksi
 ORDER BY tb_detail_bahan_baku.id_produksi
 
-/* JOIN buku ke dt_distrinbusi untuk mengetahui harga buku */
+--------------------------------------------------------------------------------------------
 SELECT 
     tb_detail_transaksi_distribusi.id_detail_transaksi_distribusi, 
     tb_detail_transaksi_distribusi.id_transaksi_distribusi, 
@@ -74,7 +75,7 @@ FROM tb_detail_transaksi_distribusi
 INNER JOIN tb_buku ON tb_detail_transaksi_distribusi.id_buku = tb_buku.id_buku
 ORDER BY id_transaksi_distribusi
 
-/* JOIN ?*/
+--------------------------------------------------------------------------------------------
 SELECT 
     tb_detail_transaksi_distribusi.id_transaksi_distribusi, 
     SUM(tb_buku.harga * tb_detail_transaksi_distribusi.jumlah) AS total_harga

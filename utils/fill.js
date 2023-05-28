@@ -20,6 +20,38 @@ const pegawai = (total) => {
   console.log(`${total} data pegawai inserted`);
 };
 
+const produksi = (total) => {
+  for (let i = 0; i < total; i++) {
+    const sql = `INSERT INTO tb_produksi VALUES(NULL, ${getRandomNumber(1, 20)}, ${getRandomNumber(1, 20)}, '2023-02-${i+1}', 0);`
+    // const sql = `UPDATE tb_produksi SET modal = 0 WHERE id_produksi = ${i+1}`
+    console.log(sql);
+
+    // db.query(sql, (err) => {
+    //   if(err) throw err
+    // })
+  }
+  console.log(`${total} data produksi inserted`);
+}
+
+const hitung_modal_produksi = () => {
+  const sql = 
+  `SELECT tb_detail_bahan_baku.id_detail_bahan_baku, tb_detail_bahan_baku.id_bahan_baku, tb_detail_bahan_baku.id_produksi, SUM(tb_detail_bahan_baku.jumlah * tb_bahan_baku.harga) AS total_harga
+  FROM tb_detail_bahan_baku
+  INNER JOIN tb_bahan_baku
+  ON tb_detail_bahan_baku.id_bahan_baku = tb_bahan_baku.id_bahan_baku
+  GROUP BY tb_detail_bahan_baku.id_produksi
+  ORDER BY tb_detail_bahan_baku.id_produksi`
+
+  let modal = []
+  db.query(sql, (err, res) => {
+    res.forEach((e, i) => {
+      modal.push(e.total_harga)
+      const sql2 = `UPDATE tb_produksi SET modal = ${e.total_harga} WHERE id_produksi = ${i+1};`
+      console.log(sql2);
+    });
+  })
+}
+
 const mesin = (total) => {
   for (let i = 0; i < total; i++) {
     let nama = faker.color.human();
@@ -56,14 +88,14 @@ const bahan_baku = () => {
   ];
 
   for (let i = 0; i < pool.length; i++) {
-    // const stok = getRandomNumber(20, 100)
+    const stok = getRandomNumber(20, 100)
     // const sql = `INSERT INTO tb_bahan_baku VALUES (NULL, '${pool[i].bahan}', ${pool[i].stok}, ${pool[i].harga})`;
-    // const sql = `UPDATE tb_bahan_baku SET harga = ${pool[i].harga} WHERE id_bahan_baku = ${i+1};`;
+    const sql = `UPDATE tb_bahan_baku SET harga = ${pool[i].harga} WHERE id_bahan_baku = ${i+1};`;
     console.log(sql);
 
-    // db.query(sql, (err) => {
-    //   if (err) throw err;
-    // });
+    db.query(sql, (err) => {
+      if (err) throw err;
+    });
   }
   console.log(`${pool.length} data bahan baku inserted`);
 };
@@ -141,9 +173,9 @@ const toko = (total) => {
     const sql = `INSERT INTO tb_toko VALUES (NULL, '${nama}', '${alamat}, ${kota}', '${noTelp}')`;
     console.log(sql);
 
-    // db.query(sql, (err) => {
-    //   if (err) throw err;
-    // });
+    db.query(sql, (err) => {
+      if (err) throw err;
+    });
   }
   console.log(`${total} data toko inserted`);
 };
@@ -194,8 +226,6 @@ const jadwal_pegawai = () => {
     }
   }
   console.log(`${31 * 20} data jadwal pegawai inserted`);
-  // console.log(siang);
-  // console.log(malam);
 }
 
 const jadwal_mesin = () => {
@@ -251,19 +281,6 @@ const transaksi_distribusi = (total) => {
   console.log(`${total} data transaksi distribusi inserted`);
 }
 
-const produksi = (total) => {
-  for (let i = 0; i < total; i++) {
-    const sql = `INSERT INTO tb_produksi VALUES(NULL, ${getRandomNumber(1, 20)}, ${getRandomNumber(1, 20)}, '2023-02-${i+1}', 0);`
-    // const sql = `UPDATE tb_produksi SET modal = 0 WHERE id_produksi = ${i+1}`
-    console.log(sql);
-
-    // db.query(sql, (err) => {
-    //   if(err) throw err
-    // })
-  }
-  console.log(`${total} data produksi inserted`);
-}
-
 const buku = (total) => {
   // const selectModal = `SELECT modal FROM produksi`
   // let modal = []
@@ -311,7 +328,6 @@ const buku = (total) => {
     console.log(sql);
   }
 
-  // }
   // let modal = []
   // db.query(`SELECT * FROM tb_produksi`, (err, res) => {
   //   if(err) throw err
@@ -341,6 +357,32 @@ const detail_transaksi_distribusi = (total) => {
     // })
   }
   // console.log(`${total} data inserted`);
+}
+
+
+const hitung_total_harga_transaksi_distribusi = () => {
+  const sql = 
+  `SELECT 
+    tb_detail_transaksi_distribusi.id_transaksi_distribusi, 
+    SUM(tb_buku.harga * tb_detail_transaksi_distribusi.jumlah) AS total_harga
+  FROM tb_detail_transaksi_distribusi
+  INNER JOIN tb_buku ON tb_detail_transaksi_distribusi.id_buku = tb_buku.id_buku
+  GROUP BY tb_detail_transaksi_distribusi.id_transaksi_distribusi
+  ORDER BY tb_detail_transaksi_distribusi.id_transaksi_distribusi`
+
+  let total = []
+  db.query(sql, (err, res) => {
+    if(err) throw err
+    // console.log(res);
+    res.forEach(e => {
+      total.push(e.total_harga)
+    });
+
+    for (let i = 0; i < 50; i++) {
+      const sql2 = `UPDATE tb_transaksi_distribusi SET total_harga = ${total[i]} WHERE id_transaksi_distribusi = ${i+1};`
+      console.log(sql2);
+    }
+  })
 }
 
 const detail_transaksi_bahan_baku = (total) => {
@@ -454,50 +496,5 @@ const hitung_transaksi_bahan_baku = () => {
     // console.log(result);
   // });
 };
-
-
-const hitung_modal_produksi = () => {
-  const sql = 
-  `SELECT tb_detail_bahan_baku.id_detail_bahan_baku, tb_detail_bahan_baku.id_bahan_baku, tb_detail_bahan_baku.id_produksi, SUM(tb_detail_bahan_baku.jumlah * tb_bahan_baku.harga) AS total_harga
-  FROM tb_detail_bahan_baku
-  INNER JOIN tb_bahan_baku
-  ON tb_detail_bahan_baku.id_bahan_baku = tb_bahan_baku.id_bahan_baku
-  GROUP BY tb_detail_bahan_baku.id_produksi
-  ORDER BY tb_detail_bahan_baku.id_produksi`
-
-  let modal = []
-  db.query(sql, (err, res) => {
-    res.forEach((e, i) => {
-      modal.push(e.total_harga)
-      const sql2 = `UPDATE tb_produksi SET modal = ${e.total_harga} WHERE id_produksi = ${i+1};`
-      console.log(sql2);
-    });
-  })
-}
-
-const hitung_total_harga_transaksi_distribusi = () => {
-  const sql = 
-  `SELECT 
-    tb_detail_transaksi_distribusi.id_transaksi_distribusi, 
-    SUM(tb_buku.harga * tb_detail_transaksi_distribusi.jumlah) AS total_harga
-  FROM tb_detail_transaksi_distribusi
-  INNER JOIN tb_buku ON tb_detail_transaksi_distribusi.id_buku = tb_buku.id_buku
-  GROUP BY tb_detail_transaksi_distribusi.id_transaksi_distribusi
-  ORDER BY tb_detail_transaksi_distribusi.id_transaksi_distribusi`
-
-  let total = []
-  db.query(sql, (err, res) => {
-    if(err) throw err
-    // console.log(res);
-    res.forEach(e => {
-      total.push(e.total_harga)
-    });
-
-    for (let i = 0; i < 50; i++) {
-      const sql2 = `UPDATE tb_transaksi_distribusi SET total_harga = ${total[i]} WHERE id_transaksi_distribusi = ${i+1};`
-      console.log(sql2);
-    }
-  })
-}
 
 module.exports = { detail_bahan_baku, detail_transaksi_bahan_baku, transaksi_bahan_baku, admin, bahan_baku, buku, distributor, jadwal_mesin, jadwal_pegawai, jadwal_pegawai, mesin, pegawai, pengiriman, produksi, toko, transaksi_distribusi, detail_transaksi_distribusi, kategori }
